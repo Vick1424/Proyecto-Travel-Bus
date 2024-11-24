@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TIPOS_AUTOBUS 3
+#define MAX_AUTOBUSES 4
+const int ASIENTOS_POR_TIPO[TIPOS_AUTOBUS] = {60, 40, 15}; 
+
+
+typedef struct {
+    char nombre[50];
+    char correo[50];
+    char telefono[15];
+} Cliente;
+
+int asientos[TIPOS_AUTOBUS][MAX_AUTOBUSES][60]; 
+
+void inicializarAsientos();
+void cargarAsientos();
+void guardarAsientos();
+void mostrarEstadoAsientos();
+Cliente registrarCliente();
+void seleccionarDestino(Cliente cliente);
+void reservarAsientos(Cliente cliente, int tipo, int autobus, const char *destino);
+void generarTicket(Cliente cliente, const char *tipoAutobus, const char *destino, int numAsiento);
+const char* obtenerNombreDestino(int destino);
+const char* obtenerTipoAutobus(int tipo);
+
+void inicializarAsientos() {
+    for (int tipo = 0; tipo < TIPOS_AUTOBUS; tipo++) {
+        for (int autobus = 0; autobus < MAX_AUTOBUSES; autobus++) {
+            for (int asiento = 0; asiento < ASIENTOS_POR_TIPO[tipo]; asiento++) {
+                asientos[tipo][autobus][asiento] = 0;
+            }
+        }
+    }
+}
+
+void cargarAsientos() {
+    FILE *archivo = fopen("estado_asientos.dat", "rb");
+    if (archivo == NULL) {
+        inicializarAsientos();
+        return;
+    }
+    fread(asientos, sizeof(asientos), 1, archivo);
+    fclose(archivo);
+}
+
+void guardarAsientos() {
+    FILE *archivo = fopen("estado_asientos.dat", "wb");
+    if (archivo == NULL) {
+        printf("Error al guardar el estado de los asientos.\n");
+        return;
+    }
+    fwrite(asientos, sizeof(asientos), 1, archivo);
+    fclose(archivo);
+}
+
+void mostrarEstadoAsientos() {
+    printf("\n=== Estado Actual de los Asientos ===\n");
+    for (int tipo = 0; tipo < TIPOS_AUTOBUS; tipo++) {
+        printf("\n%s:\n", obtenerTipoAutobus(tipo + 1));
+        for (int autobus = 0; autobus < MAX_AUTOBUSES; autobus++) {
+            printf("Autobús %d:\n", autobus + 1);
+            for (int asiento = 0; asiento < ASIENTOS_POR_TIPO[tipo]; asiento++) {
+                printf("%d ", asientos[tipo][autobus][asiento]);
+                if ((asiento + 1) % 10 == 0) printf("\n"); 
+            }
+            printf("\n");
+        }
+    }
+}
+
+
+Cliente registrarCliente() {
+    Cliente cliente;
+    printf("\n--- Registro de Usuario ---\n");
+    printf("Ingrese su nombre completo: ");
+    scanf(" %[^\n]", cliente.nombre);
+    printf("Ingrese su correo electrónico: ");
+    scanf("%s", cliente.correo);
+    printf("Ingrese su teléfono: ");
+    scanf("%s", cliente.telefono);
+    return cliente;
+}
+
+void seleccionarDestino(Cliente cliente) {
+    int destino;
+    printf("\nSeleccione el destino:\n");
+    printf("1. Circuito Histórico (Turístico)\n");
+    printf("2. Tour Gastronómico (Turístico)\n");
+    printf("3. Parque La Mexicana (Turístico)\n");
+    printf("4. Universum (Turístico)\n");
+    printf("5. CDMX -> Puebla (Carretera)\n");
+    printf("6. CDMX -> Querétaro (Carretera)\n");
+    printf("7. CDMX -> Hidalgo (Carretera)\n");
+    printf("8. CDMX -> Tepotzotlán (Vagoneta)\n");
+    printf("9. CDMX -> Valle de Bravo (Vagoneta)\n");
+    printf("Seleccione una opción: ");
+    scanf("%d", &destino);
+
+    const char *nombreDestino = obtenerNombreDestino(destino);
+    if (strcmp(nombreDestino, "Destino no válido") == 0) {
+        printf("Destino no válido. Intente nuevamente.\n");
+        return;
+    }
+
+    int tipo = (destino - 1) / 4; 
+    int autobus = (destino - 1) % 4; 
+    reservarAsientos(cliente, tipo, autobus, nombreDestino);
+}
+
+void reservarAsientos(Cliente cliente, int tipo, int autobus, const char *destino) {
+    int numAsientos;
+    printf("Ingrese el número de asientos que desea reservar: ");
+    scanf("%d", &numAsientos);
+
+    if (numAsientos <= 0 || numAsientos > ASIENTOS_POR_TIPO[tipo]) {
+        printf("Número de asientos no válido.\n");
+        return;
+    }
+
+    for (int i = 0; i < numAsientos; i++) {
+        int asiento;
+        printf("Seleccione el número de asiento (1-%d): ", ASIENTOS_POR_TIPO[tipo]);
+        scanf("%d", &asiento);
+
+        if (asiento < 1 || asiento > ASIENTOS_POR_TIPO[tipo] || asientos[tipo][autobus][asiento - 1]) {
+            printf("Asiento no válido o ya ocupado. Intente nuevamente.\n");
+            i--;
+            continue;
+        }
+
+        asientos[tipo][autobus][asiento - 1] = 1; 
+        guardarAsientos();
+
+        generarTicket(cliente, obtenerTipoAutobus(tipo + 1), destino, asiento);
+
+        printf("Asiento %d reservado exitosamente.\n", asiento);
+    }
+}
+
+void generarTicket(Cliente cliente, const char *tipoAutobus, const char *destino, int numAsiento) {
+    FILE *ticket = fopen("ticket.txt", "a");
+    if (ticket == NULL) {
+        printf("Error al generar el ticket.\n");
+        return;
+    }
+    fprintf(ticket, "=== Ticket de Reserva ===\n");
+    fprintf(ticket, "Nombre del pasajero: %s\n", cliente.nombre);
+    fprintf(ticket, "Correo electrónico: %s\n", cliente.correo);
+    fprintf(ticket, "Teléfono: %s\n", cliente.telefono);
+    fprintf(ticket, "Tipo de autobús: %s\n", tipoAutobus);
+    fprintf(ticket, "Destino: %s\n", destino);
+    fprintf(ticket, "Número de asiento reservado: %d\n", numAsiento);
+    fprintf(ticket, "=========================\n\n");
+    fclose(ticket);
+}
+
+const char* obtenerNombreDestino(int destino) {
+    switch (destino) {
+        case 1: return "Circuito Histórico";
+        case 2: return "Tour Gastronómico";
+        case 3: return "Parque La Mexicana";
+        case 4: return "Universum";
+        case 5: return "CDMX -> Puebla";
+        case 6: return "CDMX -> Querétaro";
+        case 7: return "CDMX -> Hidalgo";
+        case 8: return "Tepotzotlán";
+        case 9: return "Valle de Bravo";
+        default: return "Destino no válido";
+    }
+}
+
+const char* obtenerTipoAutobus(int tipo) {
+    switch (tipo) {
+        case 1: return "Autobuses Turísticos";
+        case 2: return "Autobuses de Carretera";
+        case 3: return "Vagonetas";
+        default: return "Desconocido";
+    }
+}
+
+int main() {
+    cargarAsientos();
+    Cliente cliente = registrarCliente(); 
+    mostrarEstadoAsientos(); 
+    seleccionarDestino(cliente);
+    mostrarEstadoAsientos(); 
+    return 0;
+}
