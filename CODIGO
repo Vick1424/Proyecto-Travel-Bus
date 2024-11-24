@@ -36,14 +36,4 @@ void inicializarAsientos() {
     }
 }
 
-}
-    fprintf(ticket, "=== Ticket de Reserva ===\n");
-    fprintf(ticket, "Nombre del pasajero: %s\n", cliente.nombre);
-    fprintf(ticket, "Correo electrónico: %s\n", cliente.correo);
-    fprintf(ticket, "Teléfono: %s\n", cliente.telefono);
-    fprintf(ticket, "Tipo de autobús: %s\n", tipoAutobus);
-    fprintf(ticket, "Destino: %s\n", destino);
-    fprintf(ticket, "Número de asiento reservado: %d\n", numAsiento);
-    fprintf(ticket, "=========================\n\n");
-    fclose(ticket);
-}
+
