@@ -1,1 +1,38 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TIPOS_AUTOBUS 3
+#define MAX_AUTOBUSES 4
+const int ASIENTOS_POR_TIPO[TIPOS_AUTOBUS] = {60, 40, 15}; 
+
+
+typedef struct {
+    char nombre[50];
+    char correo[50];
+    char telefono[15];
+} Cliente;
+
+int asientos[TIPOS_AUTOBUS][MAX_AUTOBUSES][60]; 
+
+void inicializarAsientos();
+void cargarAsientos();
+void guardarAsientos();
+void mostrarEstadoAsientos();
+Cliente registrarCliente();
+void seleccionarDestino(Cliente cliente);
+void reservarAsientos(Cliente cliente, int tipo, int autobus, const char *destino);
+void generarTicket(Cliente cliente, const char *tipoAutobus, const char *destino, int numAsiento);
+const char* obtenerNombreDestino(int destino);
+const char* obtenerTipoAutobus(int tipo);
+
+void inicializarAsientos() {
+    for (int tipo = 0; tipo < TIPOS_AUTOBUS; tipo++) {
+        for (int autobus = 0; autobus < MAX_AUTOBUSES; autobus++) {
+            for (int asiento = 0; asiento < ASIENTOS_POR_TIPO[tipo]; asiento++) {
+                asientos[tipo][autobus][asiento] = 0;
+            }
+        }
+    }
+}
 
