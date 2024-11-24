@@ -128,6 +128,35 @@ void reservarAsientos(Cliente cliente, int tipo, int autobus, const char *destin
             i--;
             continue;
         }
+        asientos[tipo][autobus][asiento - 1] = 1; 
+        guardarAsientos();
+
+        generarTicket(cliente, obtenerTipoAutobus(tipo + 1), destino, asiento);
+
+        printf("Asiento %d reservado exitosamente.\n", asiento);
+    }
+}
+
+void generarTicket(Cliente cliente, const char *tipoAutobus, const char *destino, int numAsiento) {
+    FILE *ticket = fopen("ticket.txt", "a");
+    if (ticket == NULL) {
+        printf("Error al generar el ticket.\n");
+        return;
+    }
+    fprintf(ticket, "=== Ticket de Reserva ===\n");
+    fprintf(ticket, "Nombre del pasajero: %s\n", cliente.nombre);
+    fprintf(ticket, "Correo electrónico: %s\n", cliente.correo);
+    fprintf(ticket, "Teléfono: %s\n", cliente.telefono);
+    fprintf(ticket, "Tipo de autobús: %s\n", tipoAutobus);
+    fprintf(ticket, "Destino: %s\n", destino);
+    fprintf(ticket, "Número de asiento reservado: %d\n", numAsiento);
+    fprintf(ticket, "=========================\n\n");
+    fclose(ticket);
+}
+
+const char* obtenerNombreDestino(int destino) {
+    switch (destino) {
+        case 1: return "Circuito Histórico";
 
 
 
