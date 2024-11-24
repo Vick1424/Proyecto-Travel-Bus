@@ -36,4 +36,37 @@ void inicializarAsientos() {
     }
 }
 
+void cargarAsientos() {
+    FILE *archivo = fopen("estado_asientos.dat", "rb");
+    if (archivo == NULL) {
+        inicializarAsientos();
+        return;
+    }           
+    fread(asientos, sizeof(asientos), 1, archivo);
+    fclose(archivo);
+}
 
+void guardarAsientos() {
+    FILE *archivo = fopen("estado_asientos.dat", "wb");
+    if (archivo == NULL) {
+        printf("Error al guardar el estado de los asientos.\n");
+        return;
+    }
+    fwrite(asientos, sizeof(asientos), 1, archivo);
+    fclose(archivo);
+}
+
+void mostrarEstadoAsientos() {
+    printf("\n=== Estado Actual de los Asientos ===\n");
+    for (int tipo = 0; tipo < TIPOS_AUTOBUS; tipo++) {
+        printf("\n%s:\n", obtenerTipoAutobus(tipo + 1));
+        for (int autobus = 0; autobus < MAX_AUTOBUSES; autobus++) {
+            printf("Autobús %d:\n", autobus + 1);
+            for (int asiento = 0; asiento < ASIENTOS_POR_TIPO[tipo]; asiento++) {
+                printf("%d ", asientos[tipo][autobus][asiento]);
+                if ((asiento + 1) % 10 == 0) printf("\n"); 
+            }
+            printf("\n");
+        }
+    }
+}
