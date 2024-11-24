@@ -70,3 +70,35 @@ void mostrarEstadoAsientos() {
         }
     }
 }
+Cliente registrarCliente() {
+    Cliente cliente;
+    printf("\n--- Registro de Usuario ---\n");
+    printf("Ingrese su nombre completo: ");
+    scanf(" %[^\n]", cliente.nombre);
+    printf("Ingrese su correo electrónico: ");
+    scanf("%s", cliente.correo);
+    printf("Ingrese su teléfono: ");
+    scanf("%s", cliente.telefono);
+    return cliente;
+}
+
+void seleccionarDestino(Cliente cliente) {
+    int destino;
+    printf("\nSeleccione el destino:\n");
+    printf("1. Circuito Histórico (Turístico)\n");
+    printf("2. Tour Gastronómico (Turístico)\n");
+    printf("3. Parque La Mexicana (Turístico)\n");
+    printf("4. Universum (Turístico)\n");
+    printf("5. CDMX -> Puebla (Carretera)\n");
+    printf("6. CDMX -> Querétaro (Carretera)\n");
+    printf("7. CDMX -> Hidalgo (Carretera)\n");
+    printf("8. CDMX -> Tepotzotlán (Vagoneta)\n");
+    printf("9. CDMX -> Valle de Bravo (Vagoneta)\n");
+    printf("Seleccione una opción: ");
+    scanf("%d", &destino);
+
+    const char *nombreDestino = obtenerNombreDestino(destino);
+    if (strcmp(nombreDestino, "Destino no válido") == 0) {
+        printf("Destino no válido. Intente nuevamente.\n");
+        return;
+    }
