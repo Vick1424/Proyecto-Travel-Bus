@@ -102,3 +102,32 @@ void seleccionarDestino(Cliente cliente) {
         printf("Destino no válido. Intente nuevamente.\n");
         return;
     }
+
+    int tipo = (destino - 1) / 4; 
+    int autobus = (destino - 1) % 4; 
+    reservarAsientos(cliente, tipo, autobus, nombreDestino);
+}
+
+void reservarAsientos(Cliente cliente, int tipo, int autobus, const char *destino) {
+    int numAsientos;
+    printf("Ingrese el número de asientos que desea reservar: ");
+    scanf("%d", &numAsientos);
+
+    if (numAsientos <= 0 || numAsientos > ASIENTOS_POR_TIPO[tipo]) {
+        printf("Número de asientos no válido.\n");
+        return;
+    }
+
+    for (int i = 0; i < numAsientos; i++) {
+        int asiento;
+        printf("Seleccione el número de asiento (1-%d): ", ASIENTOS_POR_TIPO[tipo]);
+        scanf("%d", &asiento);
+
+        if (asiento < 1 || asiento > ASIENTOS_POR_TIPO[tipo] || asientos[tipo][autobus][asiento - 1]) {
+            printf("Asiento no válido o ya ocupado. Intente nuevamente.\n");
+            i--;
+            continue;
+        }
+
+
+
