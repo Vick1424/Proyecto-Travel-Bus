@@ -157,6 +157,35 @@ void generarTicket(Cliente cliente, const char *tipoAutobus, const char *destino
 const char* obtenerNombreDestino(int destino) {
     switch (destino) {
         case 1: return "Circuito Histórico";
+        case 2: return "Tour Gastronómico";
+        case 3: return "Parque La Mexicana";
+        case 4: return "Universum";
+        case 5: return "CDMX -> Puebla";
+        case 6: return "CDMX -> Querétaro";
+        case 7: return "CDMX -> Hidalgo";
+        case 8: return "Tepotzotlán";
+        case 9: return "Valle de Bravo";
+        default: return "Destino no válido";
+    }
+}
+
+const char* obtenerTipoAutobus(int tipo) {
+    switch (tipo) {
+        case 1: return "Autobuses Turísticos";
+        case 2: return "Autobuses de Carretera";
+        case 3: return "Vagonetas";
+        default: return "Desconocido";
+    }
+}
+
+int main() {
+    cargarAsientos();
+    Cliente cliente = registrarCliente(); 
+    mostrarEstadoAsientos(); 
+    seleccionarDestino(cliente);
+    mostrarEstadoAsientos(); 
+    return 0;
+}
 
 
 
